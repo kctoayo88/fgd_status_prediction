@@ -26,21 +26,22 @@ if __name__ == '__main__':
     learning_rate = 1e-4
 
     dataset = DatasetLoader()
-    x, Y = dataset.load_csv('./fgd_prediction/dataset/train.csv', num_classes)
+    x, Y = dataset.load_csv('./fgd_status_predition/dataset/train.csv', num_classes)
 
     x /= 255
+    x = x.reshape(-1, 1, input_dim)
+    print(x.shape)
     # x = add_lag_feature(x)
     Y = to_categorical(Y, num_classes)
 
     model = Sequential()
-    model.add(Embedding(24, 1, input_length = input_dim))
-    model.add(LSTM(64, dropout=0.2, recurrent_dropout=0.2, activation='relu'))
-    model.add(Dense(16))
+    model.add(LSTM(24, return_sequences=True, input_shape=(1, input_dim)))
+    model.add(LSTM(16))
     model.add(Dense(num_classes, activation='softmax'))
     model.summary()
 
     optimizer = Adam(lr = learning_rate)
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    model.fit(x, Y, validation_split = 0.2, epochs = 500, batch_size = 128)
+    model.fit(x, Y, validation_split = 0.2, epochs = 500, batch_size = 64)
 
     model.save('./fgd_prediction/fgd_lstm.h5')
