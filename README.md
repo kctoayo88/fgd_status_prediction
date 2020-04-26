@@ -3,7 +3,7 @@
 
 ## Overview
 
-According to some data to predict the status of fgd with deep learning.
+According to some data features to predict the status of fgd with deep learning.
 
 
 ## Intorduction
