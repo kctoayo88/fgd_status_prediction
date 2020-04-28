@@ -4,7 +4,7 @@ from dataset_loader import DatasetLoader
 import keras
 from keras.utils import to_categorical
 from keras.models import Sequential
-from keras.layers import Dense, LSTM
+from keras.layers import Dense, LSTM, BatchNormalization
 from keras.optimizers import Adam
 
 def buildTrain(train, label, pastDay = 10):
@@ -12,7 +12,7 @@ def buildTrain(train, label, pastDay = 10):
     for i in range(train.shape[0] - pastDay):
         x_train.append(train[i : i + pastDay])
         Y_train.append(label[i : i + pastDay])
-    return np.array(X_train), np.array(Y_train)
+    return np.array(x_train), np.array(Y_train)
 
 def add_lag_feature(x):
     x = x.tolist()
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     learning_rate = 1e-3
 
     dataset = DatasetLoader()
-    x, Y = dataset.load_csv('./fgd_status_predition/dataset/train.csv', num_classes)
+    x, Y = dataset.load_csv('./dataset/train.csv', num_classes)
 
     x /= 255
     # x = add_lag_feature(x)
@@ -42,16 +42,12 @@ if __name__ == '__main__':
     Y = to_categorical(Y, num_classes)
 
     model = Sequential()
-    model.add(LSTM(24, return_sequences=True, input_shape=(x.shape[1], x.shape[2])))
-    model.add(LSTM(64, return_sequences=True, activation='relu'))
-    model.add(LSTM(64, return_sequences=True, activation='relu'))
-    model.add(LSTM(64, return_sequences=True, activation='relu'))
-    model.add(Dense(16))
+    model.add(LSTM(512, return_sequences=True, input_shape=(x.shape[1], x.shape[2])))
     model.add(Dense(num_classes, activation='softmax'))
     model.summary()
 
     optimizer = Adam(lr = learning_rate)
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    model.fit(x, Y, validation_split = 0.2, epochs = 500, batch_size = 128)
+    model.fit(x, Y, validation_split = 0.2, epochs = 500, batch_size = 1024)
 
-    model.save('./fgd_prediction/fgd_lstm.h5')
+    model.save('./fgd_lstm.h5')
