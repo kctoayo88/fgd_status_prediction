@@ -41,6 +41,6 @@ if __name__ == '__main__':
 
     optimizer = Adam(lr = learning_rate)
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    model.fit(x, Y, validation_split = 0.2, epochs = 500, batch_size = 128)
+    model.fit(x, Y, validation_split = 0.2, epochs = 500, batch_size = 1024)
 
     model.save('./fgd_prediction/mlp/fgd_mlp.h5')
