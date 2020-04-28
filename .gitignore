@@ -1,1 +1,5 @@
-__pycache__
+#files
+dataset/
+
+#floder
+/__pycache__
